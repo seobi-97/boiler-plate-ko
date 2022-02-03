@@ -4,7 +4,7 @@ const port = 5000
 const {User}=require("./models/User");
 const bodyParser=require("body-parser");
 const cookieParser=require("cookie-parser");
-
+const {auth}=require("./middleware/auth");
 
 const config=require('./config/key');
 
@@ -16,14 +16,15 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const res = require('express/lib/response');
 mongoose.connect(config.mongoURI,{
 }).then(()=>console.log('MongoDB Connected!'))
   .catch(err=>console.log(err))
 
 app.get('/', (req,res) => res.send('Hello World!~~안녕하세요! 반갑습니다.'))
 
-app.post('/register',(req,res)=>{
+app.post('/api/user/register',(req,res)=>{
   //회원 가입 할때 필요한 정보들을 client에서 가져오면
   //그것들을 데이터 베이스에 넣어준다.
   const user=new User(req.body)
@@ -37,7 +38,7 @@ app.post('/register',(req,res)=>{
   })
 })
 
-app.post('/login',(req,res)=>{
+app.post('/api/user/login',(req,res)=>{
   //요청된 이메일을 데이터베이스에서 있는지 찾는다.
   //mongodb에서 제공하는 메소드 이용
   User.findOne({email:req.body.email},(err,user)=>{
@@ -62,6 +63,35 @@ app.post('/login',(req,res)=>{
     })
   }) 
 })
+
+//role 1 admin role 2 특정 admin
+//role 0 ->일반유저 role 0이 아니면 관리자
+app.get('/api/user/auth',auth,(req,res)=>{
+  //여기까지 미들웨어를 통과해 왔다는 얘기는 Authentication이 True라는 말
+  res.status(200).json({
+    _id:req.user._id,
+    isAdmin:req.user.role===0?false:true,
+    isAuth:true,
+    emain:req.user.email,
+    name:req.user.name,
+    lastname:req.user.lastname,
+    role:req.user.role,
+    image:req.user.image,
+  })
+})
+
+
+app.get('/api/user/logout',auth,(req,res)=>{
+  User.findOneAndUpdate({_id:req.user._id},
+    {token:""},
+    (err,user)=>{
+      if(err)return res.json({success:false,err});
+      return res.status(200).send({
+        success:true,
+      });
+   });
+});
+
 
 app.listen(port, ()=> console.log(`Example app listening on port ${port}!`))
 
