@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  BrowerRouter as Router,
-  Switch,
+  BrowserRouter,
+  Routes,
   Route,
   Link
 } from "react-router-dom";
@@ -13,15 +13,15 @@ import RegisterPage from './components/views/RegisterPage/RegisterPage';
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <div>
-        <Switch>
-          <Route exact path="/" component={LandingPage}/>
-          <Route exact path="/LoginPage" component={LoginPage}/>
-          <Route exact path="/RegisterPage" component={RegisterPage}/>
-        </Switch>
+        <Routes>
+          <Route exact path="/" element={<LandingPage/>}/>
+          <Route exact path="/LoginPage" element={<LoginPage/>}/>
+          <Route exact path="/RegisterPage" element={<RegisterPage/>}/>
+        </Routes>
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 

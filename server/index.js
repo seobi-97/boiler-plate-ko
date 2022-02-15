@@ -16,6 +16,8 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 
+
+
 const mongoose = require('mongoose');
 const res = require('express/lib/response');
 mongoose.connect(config.mongoURI,{
@@ -23,6 +25,7 @@ mongoose.connect(config.mongoURI,{
   .catch(err=>console.log(err))
 
 app.get('/', (req,res) => res.send('Hello World!~~안녕하세요! 반갑습니다.'))
+app.get('/api/hello',(req,res)=>res.send('Hello World!'))
 
 app.post('/api/user/register',(req,res)=>{
   //회원 가입 할때 필요한 정보들을 client에서 가져오면
